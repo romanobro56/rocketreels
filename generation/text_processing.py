@@ -2,10 +2,7 @@ from nltk.tokenize import word_tokenize
 from nltk.tag import pos_tag
 import re
 
-class TextProcessing:
-  def __init__(self):
-    self.transcript = ""
-    self.ideas = []
+class TextProcessor:
 
   def generate_transcript_from_idea(self, client, idea):
     response = client.chat.completions.create(
@@ -36,6 +33,7 @@ class TextProcessing:
       segment = segment.strip() + ". "
 
       cleaned_split_transcript.append(segment)
+      return cleaned_split_transcript
 
   def array_transcript_to_string(self, transcript_array):
     final_transcript_cleaned = "".join(transcript_array)
