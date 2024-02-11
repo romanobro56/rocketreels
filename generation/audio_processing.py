@@ -7,16 +7,17 @@ class AudioProcessor:
   def __init__(self, client):
     self.client = client
 
-  def generate_audio_from_text(self, text, output_path): 
+  def generate_audio_from_text(self, text, output_path, voice): 
     directory = os.path.dirname(output_path)
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    response = self.client.audio.speech.create(
-      model="tts-1",
-      voice="onyx",
-      input=text
-    )
+    openai_voices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
+    if voice in openai_voices:
+      response = self.openai_tts(text, self.client, voice)
+    else:
+      print("Elevenlabs TTS is not yet supported")
+      # response = self.elevenlabs_tts(text, self.client, voice)
 
     # Stream the audio response into the file path
     response.stream_to_file(output_path)
@@ -26,14 +27,17 @@ class AudioProcessor:
     final_audio = self.replace_long_silence(output_path)
     final_audio.export(output_path, format="mp3")
 
-  def openai_tts(self, text, path, client):
+  def openai_tts(self, text, client, chosen_voice):
     response = client.audio.speech.create(
       model="tts-1",
-      voice="onyx",
+      voice=chosen_voice,
       input=text
     )
 
     return response
+  
+  def elevenlabs_tts(self, text, client, chosen_voice):
+    pass
 
   def speed_up_audio(speech_file_path):
     audio = AudioSegment.from_file(speech_file_path)
