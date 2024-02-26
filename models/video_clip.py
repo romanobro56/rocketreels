@@ -15,7 +15,7 @@ class VideoClip:
       self.ideas = ideas
 
     def set_chosen_idea(self, chosen_idea):
-      self.hosen_idea = chosen_idea
+      self.chosen_idea = chosen_idea
 
     def set_audio_file_path(self, audio_file_path):
       self.audio_file_path = audio_file_path

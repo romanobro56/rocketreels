@@ -39,19 +39,19 @@ class AudioProcessor:
   def elevenlabs_tts(self, text, client, chosen_voice):
     pass
 
-  def speed_up_audio(speech_file_path):
+  def speed_up_audio(self, speech_file_path):
     audio = AudioSegment.from_file(speech_file_path)
 
     sped_up_audio = audio.speedup(playback_speed=1.4)
     sped_up_audio.export(speech_file_path, format="mp3")
 
-  def lower_pitch(audio_path):
+  def lower_pitch(self, audio_path):
     audio = AudioSegment.from_file(audio_path)
     lower_pitch_audio = audio.low_pass_filter(3000)
     lower_pitch_audio.export(audio_path, format="mp3")
 
 
-  def replace_long_silence(audio_path, silence_thresh=-50, min_silence_len=500, silence_replacement_len=50):
+  def replace_long_silence(self, audio_path, silence_thresh=-50, min_silence_len=500, silence_replacement_len=50):
     audio = AudioSegment.from_file(audio_path)
     chunks = split_on_silence(audio, min_silence_len=min_silence_len, silence_thresh=silence_thresh)
 

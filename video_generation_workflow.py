@@ -16,19 +16,20 @@ class VideoGenerationWorkflow:
     self.client = client
     self.voice = voice
 
-  async def generate_video_from_idea(self, subject, idea_seed):
+  def generate_video_from_idea(self, subject, idea_seed):
     video_clip = VideoClip(self.output_path + "/audio", self.output_path + "/images")
 
-    ideas = self.text_processor.generate_ideas_from_subject(self.client, subject)
+    ideas =  self.text_processor.generate_ideas_from_subject(self.client, subject)
     video_clip.set_chosen_idea(ideas[idea_seed])
-    print(ideas)
-    video_clip.set_transcript(self.text_processor.generate_transcript_from_idea(self.client, video_clip.get_chosen_idea()))
+    video_transcript = self.text_processor.generate_transcript_from_idea(self.client, video_clip.get_chosen_idea())
+    video_clip.set_transcript(video_transcript)
     print(video_clip.get_transcript_string())
     self.audio_processor.generate_audio_from_text(video_clip.get_transcript_string(), self.output_path + "/audio.mp3", self.voice)
 
 
 
-  async def batch_video_generate(self, subject):
+
+  def batch_video_generate(self, subject):
     video_clip = VideoClip()
     ideas = self.text_processor.generate_ideas_from_subject(self.client, subject)
     video_clip.set_ideas(ideas)
@@ -37,8 +38,11 @@ class VideoGenerationWorkflow:
       self.audio_processor.generate_audio_from_text(idea, self.output_path + f'/audio{i}.mp3', self.voice)
 
 
-  async def generate_video_from_transcript(self, transcript):
+  def generate_video_from_transcript(self, transcript):
     pass
 
-  async def generate_video_from_article(self, article_link):
+  def generate_video_from_article(self, article_link):
+    pass
+
+  def generrate_shorts_from_youtube(self, youtube_link):
     pass

@@ -27,9 +27,9 @@ class TextProcessor:
     cleaned_split_transcript = []
 
     for segment in split_transcript:
-      segment = re.sub(r'\[.*?\]', '', segment)
-      segment = segment.replace('\n', ' ')
-      segment = re.sub(r'\s+', ' ', segment)
+      segment = re.sub(r'\[.*?\]', '', segment) # remove any text in brackets
+      segment = segment.replace('\n', ' ') # remove any new lines
+      segment = re.sub(r'\s+', ' ', segment) # remove any extra spaces
 
       if len(segment.strip()) < 5:
         continue
@@ -37,7 +37,8 @@ class TextProcessor:
       segment = segment.strip() + ". "
 
       cleaned_split_transcript.append(segment)
-      return cleaned_split_transcript
+
+    return cleaned_split_transcript
 
   def array_transcript_to_string(self, transcript_array):
     final_transcript_cleaned = "".join(transcript_array)
