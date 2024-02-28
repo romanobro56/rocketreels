@@ -30,9 +30,10 @@ class VideoGenerationWorkflow:
     video_clip.set_subtitles(subtitles)
     self.image_processor.generate_images(video_clip.get_transcript_array(), video_clip.get_chosen_idea(), self.output_path + "/images")
     print("images generated")
-    self.video_processor.generate_video_from_clip(video_clip, self.output_path + "/video.mp4")
+    return video_clip
 
-  def edit_video_from_content(self):
+  def edit_video_from_content(self, video_clip, input_path, output_path):
+    self.video_processor.generate_video_from_clip(video_clip, self.output_path + "/video.mp4")
     pass
 
 
@@ -51,5 +52,8 @@ class VideoGenerationWorkflow:
   def generate_video_from_article(self, article_link):
     pass
 
-  def generrate_shorts_from_youtube(self, youtube_link):
+  def generate_shorts_from_youtube(self, youtube_link):
+    pass
+
+  def generate_title_from_subtitles(self, subtitles):
     pass

@@ -31,4 +31,5 @@ while idea_seed < 0:
   idea_seed = int(input("Please choose a number 0 through 9 "))
 
 # Generate the video
-workflow.generate_video_from_idea(subject, idea_seed)
+video_clip = workflow.generate_video_from_idea(subject, idea_seed)
+# workflow.edit_video_from_content(video_clip, output_path, output_path + "/video.mp4")

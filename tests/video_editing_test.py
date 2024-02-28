@@ -1,6 +1,17 @@
 import unittest
+# unpickles video clip object and uses example video file to simulate video editing
+from models.video_clip import VideoClip
+from models.video import Video
 
 class TestVideoEditingMethods(unittest.TestCase):
+
+  def setUp(self):
+    self.video_clip = VideoClip()
+    self.output_video = Video()
+
+  def test_video_transcript(self):
+    self.assertEqual(video_clip.get_transcript_string(), output_video.transcript())
+    
   def test_video_length(self):
     self.assertEqual(video_clip.length_of_videos(), output_video.runtime())
 
