@@ -16,7 +16,7 @@ class VideoGenerationWorkflow:
     self.client = client
     self.voice = voice
 
-  def generate_video_from_idea(self, subject, idea_seed):
+  def generate_video_content_from_idea(self, subject, idea_seed):
     video_clip = VideoClip(self.output_path + "/audio", self.output_path + "/images")
 
     ideas =  self.text_processor.generate_ideas_from_subject(self.client, subject)
@@ -25,8 +25,15 @@ class VideoGenerationWorkflow:
     video_clip.set_transcript(video_transcript)
     print(video_clip.get_transcript_string())
     self.audio_processor.generate_audio_from_text(video_clip.get_transcript_string(), self.output_path + "/audio.mp3", self.voice)
+    subtitles = self.subtitle_processor.generate_subtitles(self.output_path + "/audio.mp3")
+    print(subtitles)
+    video_clip.set_subtitles(subtitles)
+    self.image_processor.generate_images(video_clip.get_transcript_array(), video_clip.get_chosen_idea(), self.output_path + "/images")
+    print("images generated")
+    self.video_processor.generate_video_from_clip(video_clip, self.output_path + "/video.mp4")
 
-
+  def edit_video_from_content(self):
+    pass
 
 
   def batch_video_generate(self, subject):

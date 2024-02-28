@@ -11,7 +11,7 @@ openai_api_key = config.OPENAI_API_KEY
 client = OpenAI(api_key=openai_api_key)
 
 working_directory = os.getcwd()
-output_path = "output/video_" + ''.join(random.choices(string.ascii_letters, k=8) + "_test")
+output_path = "output/video_" + ''.join(random.choices(string.ascii_letters, k=8)) + "_test"
 
 if not os.path.exists(output_path):
   os.makedirs(output_path)

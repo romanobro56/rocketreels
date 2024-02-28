@@ -6,6 +6,7 @@ class VideoClip:
       self.audio_file_path = audio_file_path
       self.image_file_paths = image_file_paths
       self.chosen_idea = ""
+      self.subtitles = ""
 
     def set_transcript(self, transcript_array):
       self.transcript_array = transcript_array
@@ -22,6 +23,9 @@ class VideoClip:
     
     def set_image_file_paths(self, image_file_paths):
       self.image_file_paths = image_file_paths
+
+    def set_subtitles(self, subtitles):
+      self.subtitles = subtitles
 
     def get_transcript_array(self):
       return self.transcript_array
@@ -40,4 +44,7 @@ class VideoClip:
     
     def get_image_file_paths(self):
       return self.image_file_paths
+    
+    def get_subtitles(self):
+      return self.subtitles
     
