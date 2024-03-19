@@ -1,17 +1,28 @@
+import concurrent.futures
 import requests
+import asyncio
 import os
 
 class ImageProcessor:
   def __init__(self, client):
     self.client = client
 
-  def generate_images(self, transcript, idea, image_directory_path):
-    os.makedirs(image_directory_path)
-    for i, sentence in enumerate(transcript):
-      image_url = self.create_dalle_from_sentence(idea, sentence)
+  async def generate_images(self, transcript, idea, image_directory_path):
+    os.makedirs(image_directory_path, exist_ok=True)
+
+    async def download_image(i, sentence):
+      loop = asyncio.get_running_loop()
+      # Run the blocking API call in a thread pool
+      image_url = await loop.run_in_executor(None, self.create_dalle_from_sentence, idea, sentence)
+      # Now, download the image
       self.download_dalle(image_url, image_directory_path, f"dalle_image_{i}.jpg")
 
+    async with asyncio.TaskGroup() as tg:
+      for i, sentence in enumerate(transcript):
+        tg.create_task(download_image(i, sentence))
+
     return str(image_directory_path)
+
 
   def create_dalle_from_sentence(self, idea, sentence):
     response = self.client.images.generate(

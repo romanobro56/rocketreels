@@ -5,6 +5,8 @@ from generation.text_processing import TextProcessor
 from editing.video_processing import VideoProcessor
 from models.video_clip import VideoClip
 
+import asyncio
+
 class VideoGenerationWorkflow:
   def __init__(self, client, output_path, voice):
     self.subtitle_processor = SubtitleProcessor(client)
@@ -28,7 +30,9 @@ class VideoGenerationWorkflow:
     subtitles = self.subtitle_processor.generate_subtitles(self.output_path + "/audio.mp3")
     print(subtitles)
     video_clip.set_subtitles(subtitles)
-    self.image_processor.generate_images(video_clip.get_transcript_array(), video_clip.get_chosen_idea(), self.output_path + "/images")
+
+    asyncio.run(self.image_processor.generate_images(video_clip.get_transcript_array(), video_clip.get_chosen_idea(), self.output_path + "/images"))
+
     print("images generated")
     return video_clip
 
