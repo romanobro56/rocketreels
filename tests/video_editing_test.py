@@ -1,13 +1,17 @@
 import unittest
+import pickle
 # unpickles video clip object and uses example video file to simulate video editing
 from models.video_clip import VideoClip
-from models.video import Video
 
 class TestVideoEditingMethods(unittest.TestCase):
 
-  def setUp(self):
-    self.video_clip = VideoClip()
-    self.output_video = Video()
+  def load_object(filename):
+    with open(filename, 'rb') as inp:  # Read in binary mode
+        return pickle.load(inp)
+    
+  def setUp(self, video_clip_path, output_path):
+    self.video_clip = load_object(video_clip_path + "/video_clip.pkl")
+    self.output_video = Video(output_path + "/video.mp4")
 
   def test_video_transcript(self):
     self.assertEqual(video_clip.get_transcript_string(), output_video.transcript())
