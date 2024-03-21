@@ -4,6 +4,7 @@ import asyncio
 import string
 import random
 import config
+import pickle
 import os
 
 # Set up OpenAI client
@@ -14,10 +15,12 @@ working_directory = os.getcwd()
 output_path = "output/video_" + ''.join(random.choices(string.ascii_letters, k=8)) + "_test" # remove test when done
 image_path = output_path + "/images"
 audio_path = output_path + "/audio"
+video_clip_path = output_path + "/video_clip"
 
 if not os.path.exists(output_path):
   os.makedirs(image_path, exist_ok=True)
   os.makedirs(audio_path, exist_ok=True)
+  os.makedirs(video_clip_path, exist_ok=True)
   print(output_path)
 else:
   print("Directory already exists (random generation collision?), try again")
@@ -36,4 +39,18 @@ while idea_seed < 0 or idea_seed > 9:
 
 # Generate the video
 video_clip = workflow.generate_video_content_from_idea(subject, idea_seed)
+
+def save_object(obj, video_clip_path):
+    with open(video_clip_path + "/video_clip.pkl", 'wb') as outp:  # Write in binary mode
+        pickle.dump(obj, outp, pickle.HIGHEST_PROTOCOL)
+
+# Function to load and deserialize the object from a file
+def load_object(filename):
+    with open(filename, 'rb') as inp:  # Read in binary mode
+        return pickle.load(inp)
+
+# Example usage
+save_object(video_clip, video_clip_path)
+
+
 # workflow.edit_video_from_content(video_clip, output_path, output_path + "/video.mp4")
