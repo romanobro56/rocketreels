@@ -1,5 +1,21 @@
 class VideoClip:
-    def __init__(self, audio_file_path, image_file_paths):
+    RESOLUTIONS = {
+      ("vertical", "SD"): (1080, 1920),
+      ("vertical", "HD"): (2160, 3840),
+      ("horizontal", "SD"): (1920, 1080),
+      ("horizontal", "HD"): (3840, 2160),
+      ("square", "SD"): (1080, 1080),
+      ("square", "HD"): (2160, 2160)
+    }
+    
+    ASPECT_RATIOS = {
+      "vertical": 9/16,
+      "horizontal": 16/9,
+      "square": 1/1
+    }
+
+    def __init__(self, name, audio_file_path, image_file_paths, orientation="vertical", quality="SD", expected_frame_rate=30):
+      self.name = name
       self.transcript_array = []
       self.transcript_string = ""
       self.ideas = []
@@ -7,6 +23,11 @@ class VideoClip:
       self.image_file_paths = image_file_paths
       self.chosen_idea = ""
       self.subtitles = ""
+      self.frame_rate = expected_frame_rate
+        
+      self.expected_horizontal_resolution, self.expected_vertical_resolution = self.RESOLUTIONS[(orientation, quality)]
+      self.expected_aspect_ratio = self.ASPECT_RATIOS[orientation]
+
 
     def set_transcript(self, transcript_array):
       self.transcript_array = transcript_array
@@ -26,6 +47,16 @@ class VideoClip:
 
     def set_subtitles(self, subtitles):
       self.subtitles = subtitles
+
+    def set_frame_rate(self, expected_frame_rate):
+      self.frame_rate = expected_frame_rate
+
+    def set_aspect_ratio(self, expected_aspect_ratio):
+      self.expected_aspect_ratio = expected_aspect_ratio
+    
+    def set_resolution(self, expected_horizontal_resolution, expected_vertical_resolution):
+      self.expected_horizontal_resolution = expected_horizontal_resolution
+      self.expected_vertical_resolution = expected_vertical_resolution
 
     def get_transcript_array(self):
       return self.transcript_array
@@ -47,4 +78,13 @@ class VideoClip:
     
     def get_subtitles(self):
       return self.subtitles
+    
+    def get_frame_rate(self):
+      return self.frame_rate
+    
+    def get_aspect_ratio(self):
+      return self.expected_aspect_ratio
+        
+    def get_resolution(self):
+      return self.horizontal_resolution, self.vertical_resolution
     
