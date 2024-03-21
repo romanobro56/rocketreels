@@ -20,7 +20,7 @@ class VideoGenerationWorkflow:
     self.voice = voice
 
   def generate_video_content_from_idea(self, subject, idea_seed):
-    video_clip = VideoClip(self.audio_path, self.image_path)
+    video_clip = VideoClip(subject, self.audio_path, self.image_path)
 
     ideas =  self.text_processor.generate_ideas_from_subject(self.client, subject)
     video_clip.set_chosen_idea(ideas[idea_seed])
