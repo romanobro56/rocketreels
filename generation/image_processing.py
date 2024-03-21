@@ -1,6 +1,7 @@
 import concurrent.futures
 import requests
 import asyncio
+import time
 import os
 
 class ImageProcessor:
@@ -9,6 +10,8 @@ class ImageProcessor:
 
   def generate_images(self, transcript, idea, image_directory_path):
     for i, sentence in enumerate(transcript):
+      # FIX: ratelimiting simple workaround
+      time.sleep(10)
       image_url = self.create_dalle_from_sentence(idea, sentence)
       self.download_dalle(image_url, image_directory_path, f"dalle_image_{i}.jpg")
 
