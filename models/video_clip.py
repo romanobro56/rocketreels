@@ -1,5 +1,20 @@
 class VideoClip:
-    def __init__(self, name, audio_file_path, image_file_paths, expected_frame_rate=60, expected_aspect_ratio=9/16, expected_horizontal_resolution=1080, expected_vertical_resolution=1920):
+    RESOLUTIONS = {
+      ("vertical", "SD"): (1080, 1920),
+      ("vertical", "HD"): (2160, 3840),
+      ("horizontal", "SD"): (1920, 1080),
+      ("horizontal", "HD"): (3840, 2160),
+      ("square", "SD"): (1080, 1080),
+      ("square", "HD"): (2160, 2160)
+    }
+    
+    ASPECT_RATIOS = {
+      "vertical": 9/16,
+      "horizontal": 16/9,
+      "square": 1/1
+    }
+
+    def __init__(self, name, audio_file_path, image_file_paths, orientation="vertical", quality="SD", expected_frame_rate=30):
       self.name = name
       self.transcript_array = []
       self.transcript_string = ""
@@ -9,9 +24,10 @@ class VideoClip:
       self.chosen_idea = ""
       self.subtitles = ""
       self.frame_rate = expected_frame_rate
-      self.aspect_ratio = expected_aspect_ratio
-      self.horizontal_resolution = expected_horizontal_resolution
-      self.vertical_resolution = expected_vertical_resolution
+        
+      self.expected_horizontal_resolution, self.expected_vertical_resolution = self.RESOLUTIONS[(orientation, quality)]
+      self.expected_aspect_ratio = self.ASPECT_RATIOS[orientation]
+
 
     def set_transcript(self, transcript_array):
       self.transcript_array = transcript_array
