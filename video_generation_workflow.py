@@ -22,32 +22,40 @@ class VideoGenerationWorkflow:
   def generate_video_content_from_idea(self, subject, idea_seed):
     video_clip = VideoClip(subject, self.audio_path, self.image_path, "vertical", "SD", 30)
 
-    ideas =  self.text_processor.generate_ideas_from_subject(self.client, subject)
+    ideas = self.text_processor.generate_ideas_from_subject(self.client, subject)
+
     video_clip.set_chosen_idea(ideas[idea_seed])
     video_transcript = self.text_processor.generate_transcript_from_idea(self.client, video_clip.get_chosen_idea())
     video_clip.set_transcript(video_transcript)
-    print(video_clip.get_transcript_string())
+
     self.audio_processor.generate_audio_from_text(video_clip.get_transcript_string(), self.audio_path + "/audio.mp3", self.voice)
     subtitles = self.subtitle_processor.generate_subtitles(self.audio_path + "/audio.mp3")
-    print(subtitles)
+
     video_clip.set_subtitles(subtitles)
 
     self.image_processor.generate_images(video_clip.get_transcript_array(), video_clip.get_chosen_idea(), self.image_path)
-    print("images generated")
+    print("video content done generating")
     return video_clip
-
-  def edit_video_from_content(self, video_clip, input_path, output_path):
-    self.video_processor.generate_video_from_clip(video_clip, self.output_path + "/video.mp4")
-    pass
 
 
   def batch_video_generate(self, subject):
-    video_clip = VideoClip()
     ideas = self.text_processor.generate_ideas_from_subject(self.client, subject)
-    video_clip.set_ideas(ideas)
+    video_clips = []
 
-    for i, idea in enumerate(video_clip.get_ideas()):
-      self.audio_processor.generate_audio_from_text(idea, self.output_path + f'/audio{i}.mp3', self.voice)
+    for i, idea in enumerate(ideas):
+      video_clip = VideoClip(subject, self.audio_path, self.image_path, "vertical", "SD", 30)
+
+      video_clip.set_chosen_idea(idea)
+      video_transcript = self.text_processor.generate_transcript_from_idea(self.client, video_clip.get_chosen_idea())
+      video_clip.set_transcript(video_transcript)
+
+      self.audio_processor.generate_audio_from_text(video_clip.get_transcript_string(), self.audio_path + f"/{i}/audio.mp3", self.voice)
+      subtitles = self.subtitle_processor.generate_subtitles(self.audio_path + f"/{i}/audio.mp3")
+
+      video_clip.set_subtitles(subtitles)
+
+      self.image_processor.generate_images(video_clip.get_transcript_array(), video_clip.get_chosen_idea(), self.image_path + f"/{i}")
+      video_clips.append(video_clip)
 
 
   def generate_content_from_transcript(self, transcript):
