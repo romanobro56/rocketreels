@@ -23,7 +23,11 @@ class TextProcessor:
     transcript_text = transcript.choices[0].message.content
     cleaned_transcript = re.sub(r'Narrator: ?\"?', '', transcript_text)
     cleaned_transcript = re.sub(r'\"', '', cleaned_transcript)
-    split_transcript = cleaned_transcript.split(".")
+
+    terminal_punctuation_marks = r'[.!?](?=\s|$)'
+    sentences = re.split(terminal_punctuation_marks, cleaned_transcript)
+    split_transcript = [sentence.strip() for sentence in sentences if sentence.strip()]
+
     cleaned_split_transcript = []
 
     for segment in split_transcript:
