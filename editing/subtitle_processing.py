@@ -1,6 +1,6 @@
 
 class SubtitleProcessor:
-  def __init__(self, client):
+  def __init__(self, client=None):
     self.client = client
 
   def generate_subtitles(self, audio_path):

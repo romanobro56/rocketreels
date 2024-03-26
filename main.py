@@ -1,4 +1,4 @@
-from video_generation_workflow import VideoGenerationWorkflow
+from content_generation_workflow import ContentGenerationWorkflow
 from openai import OpenAI
 import asyncio
 import string
@@ -29,7 +29,7 @@ else:
 
 
 # Initialize the video generation workflow
-workflow = VideoGenerationWorkflow(client, image_path, audio_path, "onyx")
+content_generation_workflow = ContentGenerationWorkflow(client, image_path, audio_path, "onyx")
 
 # Get user input
 subject = input("Enter the subject: ")
@@ -38,19 +38,9 @@ while idea_seed < 0 or idea_seed > 9:
   idea_seed = int(input("Please choose a number 0 through 9: "))
 
 # Generate the video
-video_clip = workflow.generate_video_content_from_idea(subject, idea_seed)
-
-def save_object(obj, video_clip_path):
-    with open(video_clip_path + "/video_clip.pkl", 'wb') as outp:  # Write in binary mode
-        pickle.dump(obj, outp, pickle.HIGHEST_PROTOCOL)
+video_clip = content_generation_workflow.generate_video_content_from_idea(subject, idea_seed)
 
 # Function to load and deserialize the object from a file
 def load_object(filename):
     with open(filename, 'rb') as inp:  # Read in binary mode
         return pickle.load(inp)
-
-# Example usage
-save_object(video_clip, video_clip_path)
-
-
-# workflow.edit_video_from_content(video_clip, output_path, output_path + "/video.mp4")

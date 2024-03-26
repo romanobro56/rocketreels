@@ -1,4 +1,4 @@
-class VideoClip:
+class MultimediaComposition:
     RESOLUTIONS = {
       ("vertical", "SD"): (1080, 1920),
       ("vertical", "HD"): (2160, 3840),

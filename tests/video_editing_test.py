@@ -2,7 +2,7 @@ import unittest
 import pickle
 import argparse
 from models.video_wrapper import VideoWrapper
-from models.video_clip import VideoClip
+from models.multimedia_composition import MultimediaComposition
 from utils.utilities import get_audio_duration
 
 TEST_VIDEO_PATH = None
@@ -22,7 +22,7 @@ class TestVideoEditingMethods(unittest.TestCase):
         with open(TEST_VIDEO_CONTENT + "/video_clip/video_clip.pkl", 'rb') as file:
           cls.video_content = pickle.load(file)
         cls.video_wrapper = VideoWrapper(TEST_VIDEO_PATH)
-        if not isinstance(cls.video_content, VideoClip):
+        if not isinstance(cls.video_content, MultimediaComposition):
           raise ValueError("Invalid video content. Please provide a valid video clip object for reference.")
         print(f"Loaded an instance of VideoClip with name: {cls.video_content.name}")
 
