@@ -16,7 +16,7 @@ class ContentGenerationWorkflow:
     self.voice = voice
 
   def generate_video_content_from_idea(self, subject, idea_seed):
-    content_package = MultimediaComposition(subject, self.audio_path, self.image_path, "vertical", "SD", 30)
+    content_package = MultimediaComposition(subject, self.audio_path, self.image_path)
 
     ideas = self.text_processor.generate_ideas_from_subject(self.client, subject)
 

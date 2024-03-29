@@ -1,12 +1,30 @@
+from editing.subtitle_processing import SubtitleProcessor
+
 from moviepy.editor import ImageClip, concatenate_videoclips, vfx
 from PIL import Image
-class VideoProcessor:
 
-  def create_video_from_images(self, image_path, output_path):
-    image_paths = ['image1.jpg', 'image2.jpg', 'image3.jpg']  # List of image paths
-    clips = [self.ken_burns_effect(img, duration=5) for img in image_paths]  # 5 seconds per image
-    video = concatenate_videoclips(clips)
-    video.write_videofile("output.mp4", fps=24)
+class VideoProcessor:
+  def __init__(self, editing_options):
+    self.editing_options = editing_options
+    self.subtitle_processor = SubtitleProcessor()
+
+  def generate_video_from_images(self, content_package, output_path):
+    generated_clips = []
+
+    image_timestamps = self.subtitle_processor.get_image_timestamps(content_package.get_subtitles(), content_package.get_transcript_array())
+    for i, img_stamp in enumerate(image_timestamps):
+      start = img_stamp[start]
+      end = img_stamp[end]
+      image = Image.open(content_package.get_image_file_paths()+f"/dalle_image_{i}.png")
+      image = image.resize(self.get_editing_options())
+
+      clip = ImageClip(image, duration=end-start)
+      generated_clips.append(clip)
+
+    final_clip = concatenate_videoclips(generated_clips)
+    
+
+
 
   def ken_burns_effect(self, image_path, duration, start_zoom=1.0, end_zoom=1.2, start_position=(0.5, 0.5), end_position=(0.5, 0.5)):
 

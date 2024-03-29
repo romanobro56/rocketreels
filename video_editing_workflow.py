@@ -10,7 +10,7 @@ class VideoEditingWorflow:
     self.video_file_path = video_file_path
 
   def generate_video_from_content(self, editing_options):
-    self.video_processor.generate_video(self.content_package, self.video_file_path)
+    self.video_processor.generate_video_from_images(self.content_package, self.video_file_path)
     self.subtitle_processor.overlay_subtitles(self.content_package, self.video_file_path)
 
     self.video_processor.apply_effect(self.content_package, self.video_file_path, editing_options)

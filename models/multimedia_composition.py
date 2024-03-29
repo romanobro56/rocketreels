@@ -1,5 +1,5 @@
 class MultimediaComposition:
-    
+
     def __init__(self, name, audio_file_path, image_file_paths):
       self.name = name
       self.transcript_array = []

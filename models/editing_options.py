@@ -15,10 +15,13 @@ class EditingOptions:
   }
 
   def __init__(self, orientation="vertical", quality="SD", expected_frame_rate=30):
-    self.expected_horizontal_resolution, self.expected_vertical_resolution = self.RESOLUTIONS[(orientation, quality)]
-    self.expected_aspect_ratio = self.ASPECT_RATIOS[orientation]
-
+    self.resolution = self.RESOLUTIONS[(orientation, quality)]
+    self.aspect_ratio = self.ASPECT_RATIOS[orientation]
     self.frame_rate = expected_frame_rate
+    self.expected_horizontal_resolution = self.resolution[0]
+    self.expected_vertical_resolution = self.resolution[1]
+
+
 
   ### GETTERS ###
 
@@ -36,9 +39,6 @@ class EditingOptions:
 
   def get_expected_vertical_resolution(self):
     return self.expected_vertical_resolution
-
-  def get_expected_aspect_ratio(self):
-    return self.expected_aspect_ratio
   
   ### SETTERS ###
 
@@ -56,7 +56,4 @@ class EditingOptions:
 
   def set_expected_vertical_resolution(self, vertical_resolution):
     self.expected_vertical_resolution = vertical_resolution
-
-  def set_expected_aspect_ratio(self, expected_aspect_ratio):
-    self.expected_aspect_ratio = expected_aspect_ratio
 

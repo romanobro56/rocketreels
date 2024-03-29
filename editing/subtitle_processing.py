@@ -14,3 +14,12 @@ class SubtitleProcessor:
     )
 
     return transcript
+  
+  def get_image_timestamps(self, subtitles, transcript_array):
+    image_timestamps = []
+    for word in transcript_array:
+      for subtitle in subtitles:
+        if word in subtitle:
+          image_timestamps.append(subtitle)
+    return image_timestamps
+  

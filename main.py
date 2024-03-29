@@ -1,10 +1,12 @@
 from content_generation_workflow import ContentGenerationWorkflow
 from openai import OpenAI
+import jsonpickle
 import asyncio
 import string
 import random
 import config
 import pickle
+import json
 import os
 
 # Set up OpenAI client
@@ -26,8 +28,6 @@ else:
   print("Directory already exists (random generation collision?), try again")
   raise NameError('collision detected')
 
-
-
 # Initialize the video generation workflow
 content_generation_workflow = ContentGenerationWorkflow(client, image_path, audio_path, "onyx")
 
@@ -40,7 +40,13 @@ while idea_seed < 0 or idea_seed > 9:
 # Generate the video
 video_clip = content_generation_workflow.generate_video_content_from_idea(subject, idea_seed)
 
+def save_object(obj, video_clip_path):
+    with open(video_clip_path + "/video_clip.pkl", 'wb') as outp:  # Write in binary mode
+        pickle.dump(obj, outp, pickle.HIGHEST_PROTOCOL)
+
 # Function to load and deserialize the object from a file
 def load_object(filename):
     with open(filename, 'rb') as inp:  # Read in binary mode
         return pickle.load(inp)
+    
+save_object(video_clip, video_clip_path)
