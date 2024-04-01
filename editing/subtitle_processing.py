@@ -20,7 +20,7 @@ class SubtitleProcessor:
     sentence_lengths = [len(sentence.split(" ")) for sentence in transcript_array]
 
     word_index = 0
-    words = subtitles["words"]
+    words = subtitles.words
 
     for sentence_length in sentence_lengths:
         word_count = 0
