@@ -10,7 +10,7 @@ TEST_VIDEO_CONTENT = "/test_video_content"
 
 """
 IMPORTANT DISTINCTION:
-the VideoClip class is for referencing the components of video editing comprising the finished product
+the MultimediComposition class is for referencing the components of video editing comprising the finished product
 the VideoWrapper class is for referencing the intrinsic properties of the final video which was made from the contents of VideoClip
 Do not forget while writing tests 
 """

@@ -19,7 +19,6 @@ ASPECT_RATIOS = {
 STYLES = {
   "dynamic" : {
     "zoom": (1.2, 2),
-    "pan": (0.2, 0.8),
     "coloration": "vibrant",
     "transitions": "shake",
     "transition_duration": 0.3,
@@ -27,7 +26,6 @@ STYLES = {
   },
   "dark": {
     "zoom": (1, 1.2),
-    "pan": (0.2, 0.6),
     "coloration": "dark",
     "transitions": "fade",
     "transitions_duration": 0.8,
@@ -35,7 +33,6 @@ STYLES = {
   },
   "light": {
     "zoom": (1, 1.2),
-    "pan": (0.2, 0.6),
     "coloration": "light",
     "transitions": "fade",
     "transition_duration": 0.5,
@@ -43,7 +40,6 @@ STYLES = {
   },
   "default": {
     "zoom": (1, 1.2),
-    "pan": (0.2, 0.6),
     "coloration": "none",
     "transitions": "fade",
     "transition_duration": 0.5,

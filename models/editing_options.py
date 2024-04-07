@@ -33,9 +33,6 @@ class EditingOptions:
   def get_zoom(self):
     return self.style["zoom"]
   
-  def get_pan(self):
-    return self.style["pan"]
-  
   def get_coloration(self):
     return self.style["coloration"]
   
@@ -70,9 +67,6 @@ class EditingOptions:
 
   def set_zoom(self, zoom):
     self.style["zoom"] = zoom
-
-  def set_pan(self, pan):
-    self.style["pan"] = pan
 
   def set_coloration(self, coloration):
     self.style["coloration"] = coloration
