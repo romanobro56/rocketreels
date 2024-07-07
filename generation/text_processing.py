@@ -44,10 +44,6 @@ class TextProcessor:
 
     return cleaned_split_transcript
 
-  def array_transcript_to_string(self, transcript_array):
-    final_transcript_cleaned = "".join(transcript_array)
-    return final_transcript_cleaned
-
   def generate_ideas_from_subject(self, client, subject):
     response = client.chat.completions.create(
       model="ft:gpt-3.5-turbo-1106:franklin-high-school::8ZBk0aP5",
@@ -61,17 +57,3 @@ class TextProcessor:
     ideas = response.split("\n")
     
     return ideas
-  
-  def extract_keyword(self, sentence):
-    words = word_tokenize(sentence)
-    pos_tags = pos_tag(words)
-
-    proper_nouns = [word for word, pos in pos_tags if pos == 'NNP']
-    nouns = [word for word, pos in pos_tags if pos == 'NN']
-
-    if proper_nouns:
-        return proper_nouns[0]
-    elif nouns:
-        return nouns[0] 
-    else:
-        return words[0]

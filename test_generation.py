@@ -1,12 +1,17 @@
-from video_generation_workflow import VideoGenerationWorkflow
+from content_generation_workflow import ContentGenerationWorkflow
 from openai import OpenAI
-import asyncio
 import string
 import random
 import config
 import pickle
 import os
 
+# Get user input
+subject = input("Enter the subject: ")
+idea_seed = int(input("Enter the idea seed: "))
+while idea_seed < 0 or idea_seed > 9:
+  idea_seed = int(input("Please choose a number 0 through 9: "))
+  
 # Set up OpenAI client
 openai_api_key = config.OPENAI_API_KEY
 client = OpenAI(api_key=openai_api_key)
@@ -26,19 +31,11 @@ else:
   print("Directory already exists (random generation collision?), try again")
   raise NameError('collision detected')
 
-
-
 # Initialize the video generation workflow
-workflow = VideoGenerationWorkflow(client, image_path, audio_path, "onyx")
-
-# Get user input
-subject = input("Enter the subject: ")
-idea_seed = int(input("Enter the idea seed: "))
-while idea_seed < 0 or idea_seed > 9:
-  idea_seed = int(input("Please choose a number 0 through 9: "))
+content_generation_workflow = ContentGenerationWorkflow(client, image_path, audio_path, "onyx")
 
 # Generate the video
-video_clip = workflow.generate_video_content_from_idea(subject, idea_seed)
+video_clip = content_generation_workflow.generate_video_content_from_idea(subject, idea_seed)
 
 def save_object(obj, video_clip_path):
     with open(video_clip_path + "/video_clip.pkl", 'wb') as outp:  # Write in binary mode
@@ -48,9 +45,5 @@ def save_object(obj, video_clip_path):
 def load_object(filename):
     with open(filename, 'rb') as inp:  # Read in binary mode
         return pickle.load(inp)
-
-# Example usage
+    
 save_object(video_clip, video_clip_path)
-
-
-# workflow.edit_video_from_content(video_clip, output_path, output_path + "/video.mp4")
