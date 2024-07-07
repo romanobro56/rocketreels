@@ -16,8 +16,7 @@ class AudioProcessor:
     if voice in openai_voices:
       response = self.openai_tts(text, self.client, voice)
     else:
-      print("Elevenlabs TTS is not yet supported")
-      # response = self.elevenlabs_tts(text, self.client, voice)
+      raise(SystemError("TTS Voices other than OpenAI not yet supported"))
 
     # Stream the audio response into the file path
     response.stream_to_file(output_path)
@@ -35,9 +34,7 @@ class AudioProcessor:
     )
 
     return response
-  
-  def elevenlabs_tts(self, text, client, chosen_voice):
-    pass
+
 
   def speed_up_audio(self, speech_file_path):
     audio = AudioSegment.from_file(speech_file_path)

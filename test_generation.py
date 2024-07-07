@@ -1,14 +1,17 @@
 from content_generation_workflow import ContentGenerationWorkflow
 from openai import OpenAI
-import jsonpickle
-import asyncio
 import string
 import random
 import config
 import pickle
-import json
 import os
 
+# Get user input
+subject = input("Enter the subject: ")
+idea_seed = int(input("Enter the idea seed: "))
+while idea_seed < 0 or idea_seed > 9:
+  idea_seed = int(input("Please choose a number 0 through 9: "))
+  
 # Set up OpenAI client
 openai_api_key = config.OPENAI_API_KEY
 client = OpenAI(api_key=openai_api_key)
@@ -30,12 +33,6 @@ else:
 
 # Initialize the video generation workflow
 content_generation_workflow = ContentGenerationWorkflow(client, image_path, audio_path, "onyx")
-
-# Get user input
-subject = input("Enter the subject: ")
-idea_seed = int(input("Enter the idea seed: "))
-while idea_seed < 0 or idea_seed > 9:
-  idea_seed = int(input("Please choose a number 0 through 9: "))
 
 # Generate the video
 video_clip = content_generation_workflow.generate_video_content_from_idea(subject, idea_seed)

@@ -1,6 +1,6 @@
 from editing.subtitle_processing import SubtitleProcessor
 
-from moviepy.editor import VideoFileClip, ImageClip, concatenate_videoclips, vfx
+from moviepy.editor import VideoFileClip, concatenate_videoclips
 from PIL import Image
 import numpy as np
 import subprocess

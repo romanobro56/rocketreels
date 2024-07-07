@@ -14,7 +14,5 @@ content_package = load_object("/Users/romanpisani/Desktop/Coding/AutoShorts/test
 editing_options = EditingOptions("vertical", "HD", 30)
 video_editing_workflow = VideoEditingWorkflow(content_package, content_path, editing_options)
 
-
-
 video_editing_workflow.generate_video_from_content()
 
