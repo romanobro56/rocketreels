@@ -8,3 +8,12 @@ class EditingOptions:
     self.expected_horizontal_resolution = self.resolution[0]
     self.expected_vertical_resolution = self.resolution[1]
     self.style = STYLES[style]
+
+  def get_resolution(self):
+    return self.resolution
+  
+  def get_frame_rate(self):
+    return self.frame_rate
+  
+  def get_zoom(self):
+    return self.style["zoom"]

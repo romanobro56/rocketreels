@@ -1,4 +1,5 @@
 from content_generation_workflow import ContentGenerationWorkflow
+from utils.utilities import save_object
 from openai import OpenAI
 import string
 import random
@@ -36,14 +37,5 @@ content_generation_workflow = ContentGenerationWorkflow(client, image_path, audi
 
 # Generate the video
 video_clip = content_generation_workflow.generate_video_content_from_idea(subject, idea_seed)
-
-def save_object(obj, video_clip_path):
-    with open(video_clip_path + "/video_clip.pkl", 'wb') as outp:  # Write in binary mode
-        pickle.dump(obj, outp, pickle.HIGHEST_PROTOCOL)
-
-# Function to load and deserialize the object from a file
-def load_object(filename):
-    with open(filename, 'rb') as inp:  # Read in binary mode
-        return pickle.load(inp)
     
-save_object(video_clip, video_clip_path)
+save_object(video_clip, "video_clip", video_clip_path)

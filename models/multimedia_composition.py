@@ -22,3 +22,15 @@ class MultimediaComposition:
     
     def get_chosen_idea(self):
       return self.chosen_idea
+  
+    def get_transcript_string(self):
+      return self.transcript_string
+
+    def get_transcript_array(self):
+      return self.transcript_array
+    
+    def get_subtitles(self):
+      return self.subtitles
+    
+    def get_image_file_paths(self):
+      return self.image_file_paths
