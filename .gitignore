@@ -4,3 +4,4 @@ images/
 audio.mp3
 output/
 poetry.lock
+.venv

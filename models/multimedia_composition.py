@@ -28,3 +28,9 @@ class MultimediaComposition:
 
     def get_transcript_array(self):
       return self.transcript_array
+    
+    def get_subtitles(self):
+      return self.subtitles
+    
+    def get_image_file_paths(self):
+      return self.image_file_paths
