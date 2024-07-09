@@ -9,5 +9,8 @@ class VideoWrapper:
           self.video_clip = VideoFileClip(video_path)
         except OSError as e:
           raise ValueError(f"Error loading video: {e}") from e
-        except Exception as e:  # Catch other potential MoviePy errors
+        except Exception as e: 
           raise ValueError(f"Unexpected error loading video: {e}") from e
+
+    def get_video(self):
+       return self.video_clip

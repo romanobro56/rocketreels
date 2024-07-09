@@ -1,6 +1,9 @@
 from editing.subtitle_processing import SubtitleProcessor
 
 from moviepy.editor import VideoFileClip, concatenate_videoclips
+from moviepy.video.tools.subtitles import SubtitlesClip
+from moviepy.video.VideoClip import TextClip
+from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 from PIL import Image
 import numpy as np
 import subprocess
@@ -13,7 +16,7 @@ class VideoProcessor:
     self.subtitle_processor = SubtitleProcessor()
 
   def generate_video_from_images(self, content_package, output_path):
-    generated_clips = []
+    generated_clip_files = []
 
     image_timestamps = self.subtitle_processor.get_image_timestamps(content_package.get_subtitles(), content_package.get_transcript_array())
     for i, img_stamp in enumerate(image_timestamps):
@@ -21,18 +24,20 @@ class VideoProcessor:
       end = img_stamp["end"]
       image_file_path = content_package.get_image_file_paths() + f"/dalle_image_{i}.jpg"
       ken_burns_command = self.generate_ken_burns_command(image_file_path, output_path + f"/video_clip{i}.mp4", end-start, i)
-      generated_clips.append(output_path+f"/video_clip{i}.mp4")
+      generated_clip_files.append(output_path+f"/video_clip{i}.mp4")
 
       subprocess.run(ken_burns_command, shell=True)
 
-    generated_clips = [VideoFileClip(clip) for clip in generated_clips]
-    print(generated_clips)
+    generated_clips = [VideoFileClip(file) for file in generated_clip_files]
+
+    for file in generated_clip_files:
+      os.remove(file)
 
     final_clip = concatenate_videoclips(generated_clips)
     if not os.path.exists(output_path):
       os.makedirs(output_path)
-    final_clip.write_videofile(output_path + "/outputFinal.mp4",fps=self.editing_options.get_frame_rate(), codec="libx264", )
-    return
+    final_clip.write_videofile(output_path + "/outputSilent.mp4",fps=self.editing_options.get_frame_rate(), codec="libx264")
+    return (output_path + "/outputSilent.mp4")
 
   def generate_ken_burns_command(self, image_path, output_path, duration, index):
     """
@@ -89,3 +94,11 @@ class VideoProcessor:
         zoompan=f'z=\'zoom+{zoom}\':x=\'({input_width}-{output_width}/zoom)/2\':y=\'({input_height}-{output_height}/zoom)/2\':d={frames}:s={output_width}x{output_height}'
 
     return f'ffmpeg -i {image_path} -filter_complex \"zoompan={zoompan}\" -pix_fmt yuv420p -c:v libx264 -f mp4 {output_path}'
+  
+  def overlay_subtitles(self, content_package, video_file_clip, output_path):
+    generator = lambda txt: TextClip(txt, font='Georgia-Regular', fontsize=24, color='white')
+    subtitles = SubtitlesClip(output_path + "/audio/subtitles.srt", generator)
+    final = CompositeVideoClip([video_file_clip.get_video(), subtitles])
+    subtitled_video_path = output_path + "/outputSubtitled.mp4"
+    final.write_videofile(subtitled_video_path, self.editing_options.get_framerate())
+

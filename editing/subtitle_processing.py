@@ -34,4 +34,4 @@ class SubtitleProcessor:
         image_timestamps.append({"start": start_time, "end": end_time})
 
     return image_timestamps
-  
+       

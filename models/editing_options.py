@@ -12,7 +12,7 @@ class EditingOptions:
   def get_resolution(self):
     return self.resolution
   
-  def get_frame_rate(self):
+  def get_framerate(self):
     return self.frame_rate
   
   def get_zoom(self):
