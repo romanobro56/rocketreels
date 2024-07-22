@@ -1,8 +1,9 @@
 from editing.subtitle_processing import SubtitleProcessor 
 from utils.utilities import write_string_to_file
 
-from moviepy.editor import VideoFileClip, concatenate_videoclips, ImageClip
+from moviepy.editor import VideoFileClip, concatenate_videoclips, ImageClip, AudioFileClip
 from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
+from moviepy.audio.AudioClip import CompositeAudioClip
 from moviepy.video.tools.subtitles import SubtitlesClip
 from moviepy.video.VideoClip import TextClip
 from PIL import Image, ImageFont
@@ -98,10 +99,14 @@ class VideoProcessor:
     return f'ffmpeg -i {image_path} -filter_complex \"zoompan={zoompan}\" -pix_fmt yuv420p -c:v libx264 -f mp4 {output_path}'
   
 
-  def overlay_audio(self):
-    pass
+  def overlay_audio(self, content_package, video_file_clip, video_file_path):
+    audioclip = AudioFileClip(video_file_path + "/audio/audio.mp3")
 
-  def generate_color_block(self, txt, height, width, font_size):
+    audio_video_clip = video_file_clip.set_audio(audioclip)
+    audio_video_clip.write_videofile(video_file_path + "/output.mp4")
+
+
+  def generate_color_block(self, txt, width, font_size):
     font = ImageFont.truetype(self.editing_options.get_font_family(), font_size)
     ascent, descent = font.getmetrics()
     line_height = ascent + descent + 4
