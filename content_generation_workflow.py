@@ -27,7 +27,7 @@ class ContentGenerationWorkflow:
     self.audio_processor.generate_audio_from_text(content_package.get_transcript_string(), self.audio_path + "/audio.mp3", self.voice)
     subtitles = self.subtitle_processor.generate_subtitles(self.audio_path + "/audio.mp3")
 
-    content_package.set_subtitles(subtitles)
+    content_package.set_subtitles(subtitles.words)
 
     self.image_processor.generate_images(content_package.get_transcript_array(), content_package.get_chosen_idea(), self.image_path)
     print("video content done generating")
@@ -50,7 +50,7 @@ class ContentGenerationWorkflow:
       self.audio_processor.generate_audio_from_text(video_clip.get_transcript_string(), self.audio_path + f"/{i}/audio.mp3", self.voice)
       subtitles = self.subtitle_processor.generate_subtitles(self.audio_path + f"/{i}/audio.mp3")
 
-      video_clip.set_subtitles(subtitles)
+      video_clip.set_subtitles(subtitles.words)
 
       self.image_processor.generate_images(video_clip.get_transcript_array(), video_clip.get_chosen_idea(), self.image_path + f"/{i}")
       video_clips.append(video_clip)

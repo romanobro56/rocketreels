@@ -1,9 +1,15 @@
-from editing.subtitle_processing import SubtitleProcessor
+from editing.subtitle_processing import SubtitleProcessor 
+from utils.utilities import write_string_to_file
 
-from moviepy.editor import VideoFileClip, concatenate_videoclips
-from PIL import Image
+from moviepy.editor import VideoFileClip, concatenate_videoclips, ImageClip, AudioFileClip
+from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
+from moviepy.audio.AudioClip import CompositeAudioClip
+from moviepy.video.tools.subtitles import SubtitlesClip
+from moviepy.video.VideoClip import TextClip
+from PIL import Image, ImageFont
 import numpy as np
 import subprocess
+import textwrap
 import random
 import os
 
@@ -13,7 +19,7 @@ class VideoProcessor:
     self.subtitle_processor = SubtitleProcessor()
 
   def generate_video_from_images(self, content_package, output_path):
-    generated_clips = []
+    generated_clip_files = []
 
     image_timestamps = self.subtitle_processor.get_image_timestamps(content_package.get_subtitles(), content_package.get_transcript_array())
     for i, img_stamp in enumerate(image_timestamps):
@@ -21,18 +27,20 @@ class VideoProcessor:
       end = img_stamp["end"]
       image_file_path = content_package.get_image_file_paths() + f"/dalle_image_{i}.jpg"
       ken_burns_command = self.generate_ken_burns_command(image_file_path, output_path + f"/video_clip{i}.mp4", end-start, i)
-      generated_clips.append(output_path+f"/video_clip{i}.mp4")
+      generated_clip_files.append(output_path+f"/video_clip{i}.mp4")
 
       subprocess.run(ken_burns_command, shell=True)
 
-    generated_clips = [VideoFileClip(clip) for clip in generated_clips]
-    print(generated_clips)
+    generated_clips = [VideoFileClip(file) for file in generated_clip_files]
+
+    for file in generated_clip_files:
+      os.remove(file)
 
     final_clip = concatenate_videoclips(generated_clips)
     if not os.path.exists(output_path):
       os.makedirs(output_path)
-    final_clip.write_videofile(output_path + "/outputFinal.mp4",fps=self.editing_options.get_frame_rate(), codec="libx264", )
-    return
+    final_clip.write_videofile(output_path + "/outputSilent.mp4",fps=self.editing_options.get_frame_rate(), codec="libx264")
+    return (output_path + "/outputSilent.mp4")
 
   def generate_ken_burns_command(self, image_path, output_path, duration, index):
     """
@@ -89,3 +97,58 @@ class VideoProcessor:
         zoompan=f'z=\'zoom+{zoom}\':x=\'({input_width}-{output_width}/zoom)/2\':y=\'({input_height}-{output_height}/zoom)/2\':d={frames}:s={output_width}x{output_height}'
 
     return f'ffmpeg -i {image_path} -filter_complex \"zoompan={zoompan}\" -pix_fmt yuv420p -c:v libx264 -f mp4 {output_path}'
+  
+
+  def overlay_audio(self, content_package, video_file_clip, video_file_path):
+    audioclip = AudioFileClip(video_file_path + "/audio/audio.mp3")
+
+    audio_video_clip = video_file_clip.set_audio(audioclip)
+    audio_video_clip.write_videofile(video_file_path + "/output.mp4")
+
+
+  def generate_color_block(self, txt, width, font_size):
+    font = ImageFont.truetype(self.editing_options.get_font_family(), font_size)
+    ascent, descent = font.getmetrics()
+    line_height = ascent + descent + 4
+    width = font.getlength('')
+    wrapped_lines = textwrap.wrap(txt, width=estimate_chars_per_line(font_size, width))
+    num_lines = len(wrapped_lines)
+
+    block_height = font_size + 2 * 10
+    block_width = width * .82
+    block = np.zeros((int(block_height), int(block_width), 4), dtype=np.uint8)
+    block[:, :, :3] = (0,0,0)
+    block[:, :, 3] = 128
+    color_block = ImageClip(block).set_position(("center","center"))
+
+    return (subtitles, color_block)
+  
+  def overlay_subtitles(self, content_package, video_file_clip, output_path):
+    width = self.editing_options.get_horizontal_resolution()
+    height = self.editing_options.get_vertical_resolution()
+    font_pt_size = self.editing_options.get_font_size()
+
+    subtitles = content_package.get_subtitles()
+    subtitles = self.subtitle_processor.set_sub_granularity_json(subtitles, self.editing_options)
+    content_package.set_subtitles(subtitles)
+    srt_subtitles = self.subtitle_processor.json_to_srt(content_package.get_subtitles())
+    print(subtitles)
+    write_string_to_file(srt_subtitles, output_path + "/audio/subtitles.srt")
+
+    generator = lambda txt: TextClip(
+      txt,
+      font=self.editing_options.get_font_family(),
+      fontsize=font_pt_size,
+      stroke_width=2, 
+      color='white', 
+      stroke_color = 'black', 
+      size = ( width * .8, height), 
+      method='caption',
+      align='center'
+    )
+
+    subtitles = SubtitlesClip(output_path + "/audio/subtitles.srt", generator)
+
+    final = CompositeVideoClip([video_file_clip, subtitles.set_position(('center', 'center'))])
+    subtitled_video_path = output_path + "/outputSubtitled.mp4"
+    final.write_videofile(subtitled_video_path, self.editing_options.get_frame_rate())
