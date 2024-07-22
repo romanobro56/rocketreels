@@ -2,7 +2,7 @@ from pydub import AudioSegment
 import pickle
 
 def save_object(obj, name, path):
-    with open(path + '/${name}.pkl', 'wb') as outp:
+    with open(f'{path}/{name}.pkl', 'wb') as outp:
         pickle.dump(obj, outp, pickle.HIGHEST_PROTOCOL)
 
             
