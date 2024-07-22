@@ -1,12 +1,14 @@
-from editing.subtitle_processing import SubtitleProcessor
+from editing.subtitle_processing import SubtitleProcessor 
+from utils.utilities import write_string_to_file
 
-from moviepy.editor import VideoFileClip, concatenate_videoclips
+from moviepy.editor import VideoFileClip, concatenate_videoclips, ImageClip
+from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 from moviepy.video.tools.subtitles import SubtitlesClip
 from moviepy.video.VideoClip import TextClip
-from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
-from PIL import Image
+from PIL import Image, ImageFont
 import numpy as np
 import subprocess
+import textwrap
 import random
 import os
 
@@ -95,10 +97,53 @@ class VideoProcessor:
 
     return f'ffmpeg -i {image_path} -filter_complex \"zoompan={zoompan}\" -pix_fmt yuv420p -c:v libx264 -f mp4 {output_path}'
   
-  def overlay_subtitles(self, content_package, video_file_clip, output_path):
-    generator = lambda txt: TextClip(txt, font='Georgia-Regular', fontsize=24, color='white')
-    subtitles = SubtitlesClip(output_path + "/audio/subtitles.srt", generator)
-    final = CompositeVideoClip([video_file_clip.get_video(), subtitles])
-    subtitled_video_path = output_path + "/outputSubtitled.mp4"
-    final.write_videofile(subtitled_video_path, self.editing_options.get_framerate())
 
+  def overlay_audio(self):
+    pass
+
+  def generate_color_block(self, txt, height, width, font_size):
+    font = ImageFont.truetype(self.editing_options.get_font_family(), font_size)
+    ascent, descent = font.getmetrics()
+    line_height = ascent + descent + 4
+    width = font.getlength('')
+    wrapped_lines = textwrap.wrap(txt, width=estimate_chars_per_line(font_size, width))
+    num_lines = len(wrapped_lines)
+
+    block_height = font_size + 2 * 10
+    block_width = width * .82
+    block = np.zeros((int(block_height), int(block_width), 4), dtype=np.uint8)
+    block[:, :, :3] = (0,0,0)
+    block[:, :, 3] = 128
+    color_block = ImageClip(block).set_position(("center","center"))
+
+    return (subtitles, color_block)
+  
+  def overlay_subtitles(self, content_package, video_file_clip, output_path):
+    width = self.editing_options.get_horizontal_resolution()
+    height = self.editing_options.get_vertical_resolution()
+    font_pt_size = self.editing_options.get_font_size()
+
+    subtitles = content_package.get_subtitles()
+    subtitles = self.subtitle_processor.set_sub_granularity_json(subtitles, self.editing_options)
+    content_package.set_subtitles(subtitles)
+    srt_subtitles = self.subtitle_processor.json_to_srt(content_package.get_subtitles())
+    print(subtitles)
+    write_string_to_file(srt_subtitles, output_path + "/audio/subtitles.srt")
+
+    generator = lambda txt: TextClip(
+      txt,
+      font=self.editing_options.get_font_family(),
+      fontsize=font_pt_size,
+      stroke_width=2, 
+      color='white', 
+      stroke_color = 'black', 
+      size = ( width * .8, height), 
+      method='caption',
+      align='center'
+    )
+
+    subtitles = SubtitlesClip(output_path + "/audio/subtitles.srt", generator)
+
+    final = CompositeVideoClip([video_file_clip, subtitles.set_position(('center', 'center'))])
+    subtitled_video_path = output_path + "/outputSubtitled.mp4"
+    final.write_videofile(subtitled_video_path, self.editing_options.get_frame_rate())

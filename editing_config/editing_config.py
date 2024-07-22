@@ -46,3 +46,25 @@ STYLES = {
     "effects": ["ken_burns"]
   }
 }
+
+FONT_SIZES = {
+  "extra_small": 1/24,
+  "small": 1/22,
+  "medium": 1/18,
+  "large": 1/14,
+  "extra_large": 1/12
+}
+
+GRANULARITY_WIDTHS = {
+    'small': 0.8,
+    'medium': 1.6,
+    'large': 2.4
+}
+
+SUBTITLE_GRANULARITIES = {
+  'word',
+  'segment-small',
+  'segment-medium',
+  'segment-large',
+  'sentence'
+}

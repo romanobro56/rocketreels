@@ -13,7 +13,7 @@ content_package = load_object( content_path + "/video_clip/video_clip.pkl")
 if type(content_package) != MultimediaComposition:
     raise TypeError("Content package is of type" + str(type(content_package)) + ", expected type " + str(MultimediaComposition) + ". If these look the same you may have edited the multimedia composition class then tried to load an older object")
 
-editing_options = EditingOptions("vertical", "HD", 30)
+editing_options = EditingOptions("vertical", "HD", 30, font_size="extra_large")
 video_editing_workflow = VideoEditingWorkflow(content_package, content_path, editing_options)
 
 video_editing_workflow.generate_video_from_content()
