@@ -10,7 +10,7 @@ class EditingOptions:
   def __init__(
     self, 
     orientation="vertical", 
-    quality="SD", 
+    quality="HD", 
     expected_frame_rate=30, 
     ken_burns=True, 
     style="default", 

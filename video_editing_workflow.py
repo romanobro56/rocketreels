@@ -12,10 +12,10 @@ class VideoEditingWorkflow:
     self.video_file_path = video_file_path
 
   def generate_video_from_content(self):
-    # silent_video_path = self.video_processor.generate_video_from_images(self.content_package, self.video_file_path)
-    # silent_video_file_clip = VideoFileClip(self.video_file_path + "/outputSilent.mp4")
-    # subtitled_video_path = self.video_processor.overlay_subtitles(self.content_package, silent_video_file_clip.get_video(), self.video_file_path)
-    subtitled_video_file_clip = VideoFileClip("output/video_GVgMZMez_test/outputSubtitled.mp4")
+    silent_video_path = self.video_processor.generate_video_from_images(self.content_package, self.video_file_path)
+    silent_video_file_clip = VideoFileClip(self.video_file_path + "/outputSilent.mp4")
+    subtitled_video_path = self.video_processor.overlay_subtitles(self.content_package, silent_video_file_clip, self.video_file_path)
+    subtitled_video_file_clip = VideoFileClip(self.video_file_path + "/outputSubtitled.mp4")
     final_video_path = self.video_processor.overlay_audio(self.content_package, subtitled_video_file_clip, self.video_file_path)
 
-    self.video_processor.apply_effect(self.content_package, self.video_file_path, editing_options)
+    # self.video_processor.apply_effect(self.content_package, self.video_file_path, editing_options)
