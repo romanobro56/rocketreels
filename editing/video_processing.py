@@ -139,7 +139,7 @@ class VideoProcessor:
       txt,
       font=self.editing_options.get_font_family(),
       fontsize=font_pt_size,
-      stroke_width=2, 
+      stroke_width=self.editing_options.get_font_stroke_width(), 
       color='white', 
       stroke_color = 'black', 
       size = ( width * .8, height), 

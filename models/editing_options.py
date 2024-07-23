@@ -16,7 +16,8 @@ class EditingOptions:
     style="default", 
     font_family='Titan-One',
     font_size="medium",
-    subtitle_granularity_width = 'medium'
+    font_stroke_width='3',
+    subtitle_granularity_width='medium'
   ):
     self.resolution = RESOLUTIONS[(orientation, quality)]
     self.aspect_ratio = ASPECT_RATIOS[orientation]
@@ -26,6 +27,7 @@ class EditingOptions:
     self.font_family=font_family
     self.font_size=FONT_SIZES[font_size]
     self.subtitle_granularity_width = GRANULARITY_WIDTHS[subtitle_granularity_width]
+    self.font_stroke_width = font_stroke_width
 
   def get_resolution(self):
     return self.resolution
@@ -50,3 +52,6 @@ class EditingOptions:
   
   def get_subtitle_granularity_width(self):
     return self.subtitle_granularity_width
+  
+  def get_font_stroke_width(self):
+    return self.font_stroke_width
