@@ -1,6 +1,5 @@
 from pydub.silence import split_on_silence
 from pydub import AudioSegment
-import whisper
 import os 
 
 class AudioProcessor:
@@ -20,8 +19,6 @@ class AudioProcessor:
 
     # Stream the audio response into the file path
     response.stream_to_file(output_path)
-    self.speed_up_audio(output_path)
-    self.lower_pitch(output_path)
 
     final_audio = self.replace_long_silence(output_path)
     final_audio.export(output_path, format="mp3")
@@ -34,19 +31,6 @@ class AudioProcessor:
     )
 
     return response
-
-
-  def speed_up_audio(self, speech_file_path):
-    audio = AudioSegment.from_file(speech_file_path)
-
-    sped_up_audio = audio.speedup(playback_speed=1.4)
-    sped_up_audio.export(speech_file_path, format="mp3")
-
-  def lower_pitch(self, audio_path):
-    audio = AudioSegment.from_file(audio_path)
-    lower_pitch_audio = audio.low_pass_filter(3000)
-    lower_pitch_audio.export(audio_path, format="mp3")
-
 
   def replace_long_silence(self, audio_path, silence_thresh=-50, min_silence_len=500, silence_replacement_len=50):
     audio = AudioSegment.from_file(audio_path)
