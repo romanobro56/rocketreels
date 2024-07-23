@@ -25,7 +25,7 @@ class AudioProcessor:
 
   def openai_tts(self, text, client, chosen_voice):
     response = client.audio.speech.create(
-      model="tts-1",
+      model="tts-1-hd",
       voice=chosen_voice,
       input=text
     )
