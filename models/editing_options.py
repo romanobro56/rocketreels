@@ -17,6 +17,7 @@ class EditingOptions:
     font_family='Titan-One',
     font_size="medium",
     font_stroke_width='3',
+    font_stroke_color="black",
     subtitle_granularity_width='medium'
   ):
     self.resolution = RESOLUTIONS[(orientation, quality)]
@@ -28,6 +29,7 @@ class EditingOptions:
     self.font_size=FONT_SIZES[font_size]
     self.subtitle_granularity_width = GRANULARITY_WIDTHS[subtitle_granularity_width]
     self.font_stroke_width = font_stroke_width
+    self.font_stroke_color = font_stroke_color
 
   def get_resolution(self):
     return self.resolution
@@ -55,3 +57,6 @@ class EditingOptions:
   
   def get_font_stroke_width(self):
     return self.font_stroke_width
+  
+  def get_font_stroke_color(self):
+    return self.font_stroke_color
