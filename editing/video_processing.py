@@ -141,8 +141,8 @@ class VideoProcessor:
       fontsize=font_pt_size,
       stroke_width=self.editing_options.get_font_stroke_width(), 
       color='white', 
-      stroke_color = 'black', 
-      size = ( width * .8, height), 
+      stroke_color=self.editing_options.get_font_stroke_color(), 
+      size=( width * .8, height), 
       method='caption',
       align='center'
     )
