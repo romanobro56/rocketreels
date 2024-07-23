@@ -79,13 +79,15 @@ class SubtitleProcessor:
   def json_to_srt(self, json_obj):
     srt_content = ""
     for index, subtitle in enumerate(json_obj, start=1):
-      # Convert start and end times to SRT format (HH:MM:SS,mmm)
-      start_time = format_time(subtitle['start'])
-      end_time = format_time(subtitle['end'])
-      
-      # Format the subtitle entry
-      srt_content += f"{index}\n"
-      srt_content += f"{start_time} --> {end_time}\n"
-      srt_content += f"{subtitle['text']}\n\n"
+        start_time = format_time(subtitle['start'])
+        
+        if index < len(json_obj):
+            end_time = format_time(json_obj[index]['start'])
+        else:
+            end_time = format_time(subtitle['end'])
+        
+        srt_content += f"{index}\n"
+        srt_content += f"{start_time} --> {end_time}\n"
+        srt_content += f"{subtitle['text']}\n\n"
     
     return srt_content.strip()
