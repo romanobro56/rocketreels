@@ -1,21 +1,32 @@
 from models.multimedia_composition import MultimediaComposition
 from editing.subtitle_processing import SubtitleProcessor
 from generation.image_processing import ImageProcessor
+from generation.gemini_image_processor import GeminiImageProcessor
 from generation.audio_processing import AudioProcessor
 from generation.text_processing import TextProcessor
 import concurrent.futures
+import config
 import os
 
 class ContentGenerationWorkflow:
-  def __init__(self, client, image_path, audio_path, voice):
+  def __init__(self, client, image_path, audio_path, voice, image_generator="openai"):
     self.subtitle_processor = SubtitleProcessor(client)
     self.audio_processor = AudioProcessor(client)
-    self.image_processor = ImageProcessor(client)
+    
+    # Initialize the selected image processor
+    if image_generator.lower() == "openai":
+      self.image_processor = ImageProcessor(client)
+    elif image_generator.lower() == "gemini":
+      self.image_processor = GeminiImageProcessor(config.GEMINI_API_KEY)
+    else:
+      raise ValueError(f"Unsupported image generator: {image_generator}. Use 'openai' or 'gemini'")
+      
     self.text_processor = TextProcessor(client)
     self.image_path = image_path
     self.audio_path = audio_path
     self.client = client
     self.voice = voice
+    self.image_generator = image_generator
 
   def generate_video_content_from_idea(self, subject, idea_seed):
     content_package = MultimediaComposition(subject, self.audio_path, self.image_path)
