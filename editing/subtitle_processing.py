@@ -32,8 +32,26 @@ class SubtitleProcessor:
             word_count += 1
             word_index += 1
         
-        start_time = subtitles[start_index]["start"] if start_index < len(subtitles) else 0
-        end_time = subtitles[word_index - 1]["end"] if word_index - 1 < len(subtitles) else subtitles[-1]["end"]
+        # Check if we're dealing with TranscriptionWord objects or dictionaries
+        if start_index < len(subtitles):
+            if hasattr(subtitles[start_index], 'start'):
+                # TranscriptionWord object case - use attribute access
+                start_time = subtitles[start_index].start if start_index < len(subtitles) else 0
+                end_time = subtitles[word_index - 1].end if word_index - 1 < len(subtitles) else subtitles[-1].end
+            else:
+                # Dictionary case - use key access
+                start_time = subtitles[start_index]["start"] if start_index < len(subtitles) else 0
+                end_time = subtitles[word_index - 1]["end"] if word_index - 1 < len(subtitles) else subtitles[-1]["end"]
+        else:
+            # Default fallback if start_index is out of bounds
+            start_time = 0
+            end_time = 0
+            if len(subtitles) > 0:
+                if hasattr(subtitles[-1], 'end'):
+                    end_time = subtitles[-1].end
+                else:
+                    end_time = subtitles[-1]["end"]
+                    
         image_timestamps.append({"start": start_time, "end": end_time})
 
     return image_timestamps
@@ -48,30 +66,47 @@ class SubtitleProcessor:
     current_line = []
     
     for subtitle in subtitle_words:
-        word = subtitle["word"]
+        # Check if subtitle is a TranscriptionWord object or a dictionary
+        if hasattr(subtitle, 'word'):
+            word = subtitle.word
+            start = subtitle.start
+            end = subtitle.end
+        else:
+            word = subtitle["word"]
+            start = subtitle["start"]
+            end = subtitle["end"]
+            
         width = font.getlength(word + " ")
 
         if start_time is None:
-            start_time = subtitle["start"]
+            start_time = start
 
         if running_line_width + width > text_width * editing_options.get_horizontal_resolution():
             new_subtitles.append({
                 "text": " ".join(current_line),
                 "start": start_time,
-                "end": subtitle["end"]
+                "end": end
             })
             current_line = [word]
             running_line_width = width
-            start_time = subtitle["start"]
+            start_time = start
         else:
             current_line.append(word)
             running_line_width += width
 
     if current_line:
+        # For the last subtitle, get the end time properly
+        last_end = 0
+        if subtitle_words:
+            if hasattr(subtitle_words[-1], 'end'):
+                last_end = subtitle_words[-1].end
+            else:
+                last_end = subtitle_words[-1]["end"]
+                
         new_subtitles.append({
             "text": " ".join(current_line),
             "start": start_time,
-            "end": subtitle_words[-1]["end"]
+            "end": last_end
         })
 
     return new_subtitles

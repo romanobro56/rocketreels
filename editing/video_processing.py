@@ -44,60 +44,103 @@ class VideoProcessor:
 
   def generate_ken_burns_command(self, image_path, output_path, duration, index):
     """
-    example zoom pan / pad command
-    pad=
-      w=9600:h=6000:
-      x='(ow-iw)/2':y='(oh-ih)/2',
-    zoompan=
-      x='(iw-0.625*ih)/2':
-      y='(1-on/(25*4))*(ih-ih/zoom)':
-      z='if(eq(on,1),2.56,zoom+0.002)':
-      d=25*4:s=1280x800
+    Enhanced Ken Burns effect with proper aspect ratio handling through center cropping
     """
     output_width = self.editing_options.get_resolution()[0]
     output_height = self.editing_options.get_resolution()[1]
-    frames = self.editing_options.get_frame_rate() * duration
-    zoom = (self.editing_options.get_zoom()[1] - self.editing_options.get_zoom()[0]) / frames;
-    input_width = Image.open(image_path).size[0]
-    input_height = Image.open(image_path).size[1]
-
-    if input_width / input_height > output_width / output_height:
-      possible_directions = ["R", "L", "C"]
-      if input_width/input_height - output_width/ output_height <= 3/4:
-        possible_directions.extend(["TR", "TL", "BR", "BL"])
-
-    elif input_width / input_height < output_width / output_height:
-      possible_directions = ["T", "B" "C"]
-      if input_width / input_height - output_width / output_height >= -3/4:
-        possible_directions.extend(["TR", "TL", "BR", "BL"])
+    output_aspect_ratio = output_width / output_height
+    frame_rate = self.editing_options.get_frame_rate()
+    frames = int(frame_rate * duration)
+    
+    # Get image dimensions
+    img = Image.open(image_path)
+    img_width, img_height = img.size
+    img_aspect_ratio = img_width / img_height
+    
+    # Calculate upscale factor
+    upscale_factor = 4
+    
+    # High-res dimensions
+    high_res_width = output_width * upscale_factor
+    high_res_height = output_height * upscale_factor
+    
+    # Zoom settings
+    zoom_min, zoom_max = self.editing_options.get_zoom()
+    zoom_min = max(1.0, zoom_min)
+    zoom_max = min(1.5, zoom_max)
+    
+    # Seed random
+    random.seed(index)
+    effect = random.choice(["zoom_in", "zoom_out"])
+    
+    # Build filters
+    filters = []
+    
+    # First, scale the image to maintain aspect ratio while ensuring
+    # it's large enough for the target dimensions
+    if img_aspect_ratio > output_aspect_ratio:
+        # Image is wider: scale to height and crop width
+        scaled_height = high_res_height
+        scaled_width = int(scaled_height * img_aspect_ratio)
     else:
-      possible_directions = ["R", "L", "T", "B", "C", "TR", "TL", "BR", "BL"]
-
-    direction = random.choice(possible_directions)
-    zoompan = ""
-
-    match direction:
-      case "BR":
-        zoompan=f'z=\'zoom+{zoom}\':x=\'{input_width}-{input_width}/zoom\':y=\'{input_height}-{input_height}/zoom\':d={frames}:s={output_width}x{output_height}'
-      case "BL":
-        zoompan=f'z=\'zoom+{zoom}\':x=\'0\':y=\'{input_width}-{input_height}/zoom\':d={frames}:s={output_width}x{output_height}'
-      case "TR":
-        zoompan=f'z=\'zoom+{zoom}\':x=\'{input_width}-{input_width}/zoom\':y=\'0\':d={frames}:s={output_width}x{output_height}'
-      case "TL":
-        zoompan=f'z=\'zoom+{zoom}\':x=\'0\':y=\'0\':d={frames}:s={output_width}x{output_height}'
-      case "R":
-        zoompan=f'z=\'zoom+{zoom}\':x=\'{input_width}-{input_width}/zoom\':y=\'({input_height}-{output_height}/zoom)/2\':d={frames}:s={output_width}x{output_height}'
-      case "L":
-        zoompan=f'z=\'zoom+{zoom}\':x=\'0\':y=\'({input_height}-{output_height}/zoom)/2\':d={frames}:s={output_width}x{output_height}'
-      case "T":
-        zoompan=f'z=\'zoom+{zoom}\':x=\'({input_width}-{output_width}/zoom)/2\':y=\'0\':d={frames}:s={output_width}x{output_height}'
-      case "B":
-        zoompan=f'z=\'zoom+{zoom}\':x=\'({input_width}-{output_width}/zoom)/2\':y=\'{input_height}-{input_height}/zoom\':d={frames}:s={output_width}x{output_height}'
-      case "C":
-        zoompan=f'z=\'zoom+{zoom}\':x=\'({input_width}-{output_width}/zoom)/2\':y=\'({input_height}-{output_height}/zoom)/2\':d={frames}:s={output_width}x{output_height}'
-
-    return f'ffmpeg -i {image_path} -filter_complex \"zoompan={zoompan}\" -pix_fmt yuv420p -c:v libx264 -f mp4 {output_path}'
-  
+        # Image is taller: scale to width and crop height
+        scaled_width = high_res_width
+        scaled_height = int(scaled_width / img_aspect_ratio)
+    
+    filters.append(f"scale={scaled_width}:{scaled_height}:flags=lanczos")
+    
+    # Crop to target aspect ratio (center crop)
+    if img_aspect_ratio != output_aspect_ratio:
+        if img_aspect_ratio > output_aspect_ratio:
+            # Crop width
+            crop_width = int(scaled_height * output_aspect_ratio)
+            crop_height = scaled_height
+            crop_x = (scaled_width - crop_width) // 2
+            crop_y = 0
+        else:
+            # Crop height
+            crop_width = scaled_width
+            crop_height = int(scaled_width / output_aspect_ratio)
+            crop_x = 0
+            crop_y = (scaled_height - crop_height) // 2
+        
+        filters.append(f"crop={crop_width}:{crop_height}:{crop_x}:{crop_y}")
+    
+    # Apply zoompan effect
+    if effect == "zoom_in":
+        filters.append(
+            f"zoompan="
+            f"z='min({zoom_max},{zoom_min}+({zoom_max}-{zoom_min})*on/{frames})':"
+            f"x='(iw-iw/zoom)/2':"
+            f"y='(ih-ih/zoom)/2':"
+            f"d={frames}:s={high_res_width}x{high_res_height}"
+        )
+    else:  # zoom_out
+        filters.append(
+            f"zoompan="
+            f"z='max({zoom_min},{zoom_max}-({zoom_max}-{zoom_min})*on/{frames})':"
+            f"x='(iw-iw/zoom)/2':"
+            f"y='(ih-ih/zoom)/2':"
+            f"d={frames}:s={high_res_width}x{high_res_height}"
+        )
+    
+    # Final downscale
+    filters.append(f"scale={output_width}:{output_height}:flags=lanczos")
+    
+    # Ensure proper format
+    filters.append("format=yuv420p")
+    
+    # Join filters
+    filter_string = ",".join(filters)
+    
+    command = (
+        f'ffmpeg -y -i {image_path} '
+        f'-vf "{filter_string}" '
+        f'-c:v libx264 -preset medium -pix_fmt yuv420p -r {frame_rate} '
+        f'-t {duration} {output_path}'
+    )
+    
+    return command
 
   def overlay_audio(self, content_package, video_file_clip, video_file_path):
     audioclip = AudioFileClip(video_file_path + "/audio/audio.mp3")
