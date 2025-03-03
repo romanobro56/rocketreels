@@ -4,14 +4,22 @@ from generation.image_processing import ImageProcessor
 from generation.gemini_image_processor import GeminiImageProcessor
 from generation.audio_processing import AudioProcessor
 from generation.text_processing import TextProcessor
+from elevenlabs.client import ElevenLabs
 import concurrent.futures
 import config
 import os
 
 class ContentGenerationWorkflow:
-  def __init__(self, client, image_path, audio_path, voice, image_generator="openai"):
+  def __init__(self, client, image_path, audio_path, voice, image_generator="openai", tts_provider="openai"):
     self.subtitle_processor = SubtitleProcessor(client)
-    self.audio_processor = AudioProcessor(client)
+    
+    # Initialize ElevenLabs client if needed
+    self.elevenlabs_client = None
+    if tts_provider.lower() == "elevenlabs":
+      self.elevenlabs_client = ElevenLabs(api_key=config.ELEVENLABS_API_KEY)
+    
+    # Initialize audio processor with both clients
+    self.audio_processor = AudioProcessor(client, self.elevenlabs_client)
     
     # Initialize the selected image processor
     if image_generator.lower() == "openai":
@@ -27,6 +35,7 @@ class ContentGenerationWorkflow:
     self.client = client
     self.voice = voice
     self.image_generator = image_generator
+    self.tts_provider = tts_provider
 
   def generate_video_content_from_idea(self, subject, idea_seed):
     content_package = MultimediaComposition(subject, self.audio_path, self.image_path)
@@ -44,7 +53,8 @@ class ContentGenerationWorkflow:
         self.audio_processor.generate_audio_from_text, 
         content_package.get_transcript_string(), 
         self.audio_path + "/audio.mp3", 
-        self.voice
+        self.voice,
+        self.tts_provider
       )
       
       # Start image generation in parallel
@@ -113,7 +123,8 @@ class ContentGenerationWorkflow:
         self.audio_processor.generate_audio_from_text, 
         video_clip.get_transcript_string(), 
         f"{self.audio_path}/{index}/audio.mp3", 
-        self.voice
+        self.voice,
+        self.tts_provider
       )
       
       image_future = executor.submit(

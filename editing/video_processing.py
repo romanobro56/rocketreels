@@ -146,8 +146,12 @@ class VideoProcessor:
     audioclip = AudioFileClip(video_file_path + "/audio/audio.mp3")
 
     audio_video_clip = video_file_clip.set_audio(audioclip)
-    audio_video_clip.write_videofile(video_file_path + "/output.mp4")
-
+    audio_video_clip.write_videofile(
+        video_file_path + "/output.mp4",
+        codec="libx264",
+        audio_codec="aac",
+        audio_bitrate="192k"
+    )
 
   def generate_color_block(self, txt, width, font_size):
     font = ImageFont.truetype(self.editing_options.get_font_family(), font_size)
