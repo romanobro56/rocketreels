@@ -13,7 +13,9 @@ AutoShorts is an AI-powered video generation pipeline that automatically creates
 ## Demo
 
 <p align="center">
-![example](https://github.com/user-attachments/assets/8a690744-294d-4a8d-8838-82266ff2f2f9)
+
+![example](https://github.com/user-attachments/assets/383b7647-37a9-498f-aecf-31833899d64f)
+
 
 https://github.com/user-attachments/assets/97b3eb25-3dd1-4b0b-8fd2-bc99e17de4ae
 </p>
