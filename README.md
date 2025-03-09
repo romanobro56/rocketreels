@@ -1,6 +1,6 @@
-# AutoShorts
+# Rocketreels
 
-AutoShorts is an AI-powered video generation pipeline that automatically creates engaging short-form videos (like TikTok, YouTube Shorts, or Instagram Reels) from simple subject inputs. Give it a topic, and it does the rest - generating script, narration, visuals, editing, and subtitles.
+Rocketreels is an AI-powered video generation pipeline that automatically creates engaging short-form videos (like TikTok, YouTube Shorts, or Instagram Reels) from simple subject inputs. Give it a topic, and it does the rest - generating script, narration, visuals, editing, and subtitles.
 
 ## Features
 
@@ -48,8 +48,8 @@ https://github.com/user-attachments/assets/97b3eb25-3dd1-4b0b-8fd2-bc99e17de4ae
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/autoshorts.git
-cd autoshorts
+git clone https://github.com/romanobro56/rocketreels.git
+cd rocketreels
 
 # Install dependencies with Poetry
 poetry install
