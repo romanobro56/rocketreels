@@ -141,10 +141,9 @@ This project uses several AI services:
 
 ## Contributing
 
-Don't you dare try and contribute!
-
+If you feel like it 
 ---
 
 <p align="center">
-  Made with hate in my heart by <a href="https://github.com/romanobro56">Roman</a>
+  Made with dollar signs in my eyes by <a href="https://github.com/romanobro56">Roman</a>
 </p>
